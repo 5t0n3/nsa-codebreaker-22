@@ -22,7 +22,7 @@
 
 Don't use DirBuster, noted. I initially didn't know where to start for this one, so I tried just navigating to the `/login` page, but only got a screen that said "Unauthorized." I then decided to look at all the information I got from the website I discovered in the previous task (https://iulplkticahjbflq.ransommethis.net/demand?cid=64187). There's only 3 fields in the JSON returned: `address`, `amount`, and `exp_date`, so nothing interesting. When I looked at the headers, I saw something interesting: a header called `x-git-commit-hash`. I thought that was interesting, so I tried navigating to https://iulplkticahjbflq.ransommethis.net/.git:
 
-<div style="text-align: center;">
+<div align="center">
     <img src="./img/directory%20listing%20disabled.png" alt="Directory listing disabled screen">
 </div>
 
@@ -66,7 +66,7 @@ Because the `index` file is in a [binary format](https://git-scm.com/docs/index-
 
 I went straight to [`app/server.py`](./server-files/app/server.py), since I figured that'd be where the super secret login URL would be, and I was not disappointed. The very first function declared is one called `expected_pathkey()`, which just returns the string `adrlarozeijppjmg`. Scrolling all the way down to the bottom confirms that you must have the pathkey right after the domain name, or else the web server redirects you to the unauthorized page from earlier. Now that I know the pathkey, I can try appending it to the URL found in the previous task. Navigating to https://iulplkticahjbflq.ransommethis.net/adrlarozeijppjmg yields the following screen:
 
-<div style="text-align: center;">
+<div align="center">
     <img src="./img/login%20screen.png" alt="Login screen">
 </div>
 

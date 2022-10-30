@@ -27,13 +27,13 @@ The first thing I did was extract the contents of `root.tar.bz2`. The most inter
 
 After opening up the packet capture in Wireshark, I followed [a guide on its wiki](https://wiki.wireshark.org/TLS#tls-decryption) to add the RSA private key in `.cert.pem` to allow the TLS traffic to be decrypted. This was the result after doing so:
 
-<div style="text-align: center;">
+<div align="center">
     <img src="./img/packet%20capture%20post-decryption.png" alt="Wireshark after decrypting the TLS traffic">
 </div>
 
 The GET request doesn't contain anything interesting, so I decided to check out the first packet labeled "TLS segment of a reassembled PDU:"
 
-<div style="text-align: center;">
+<div align="center">
     <img src="./img/decrypted%20contents%20of%20first%20reassembled%20PDU.png" alt="Decrypted contents of first reassembled TLS PDU">
 </div>
 
