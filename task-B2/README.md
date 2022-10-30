@@ -1,5 +1,11 @@
 # Task B2 - Getting Deeper
 
+<p align="center">
+<img src="https://img.shields.io/badge/categories-Web%20Hacking%2C%20%5Bredacted%5D-informational">
+<img src="https://img.shields.io/badge/points-100-success">
+<img src="https://img.shields.io/badge/tools-git%2C%20python-blueviolet">
+</p>
+
 > It looks like the backend site you discovered has some security features to prevent you from snooping. They must have hidden the login page away somewhere hard to guess.
 >
 > Analyze the backend site, and find the URL to the login page.
@@ -12,6 +18,8 @@
 >
 > - Enter the URL for the login page
 
+## Solution
+
 Don't use DirBuster, noted. I initially didn't know where to start for this one, so I tried just navigating to the `/login` page, but only got a screen that said "Unauthorized." I then decided to look at all the information I got from the website I discovered in the previous task (https://iulplkticahjbflq.ransommethis.net/demand?cid=64187). There's only 3 fields in the JSON returned: `address`, `amount`, and `exp_date`, so nothing interesting. When I looked at the headers, I saw something interesting: a header called `x-git-commit-hash`. I thought that was interesting, so I tried navigating to https://iulplkticahjbflq.ransommethis.net/.git:
 
 <div style="text-align: center;">
@@ -22,14 +30,14 @@ Huh, that's different. Navigating to `/.git/index` prompted me to download a fil
 
 I decided to stick the `index` file inside of an empty `.git` repository and ran `git diff` to see what would happen:
 
-```
+```shell
 $ git diff
 fatal: unable to read fc46c46e55ad48869f4b91c2ec8756e92cc01057
 ```
 
 Huh, that kinda looks like an object hash. After doing some research I found out about the [`git ls-files`](https://git-scm.com/docs/git-ls-files) command which, when passed the `--stage` flag, prints out all of the objects and filenames currently in the index:
 
-```
+```shell
 $ git ls-files --stage
 100755 fc46c46e55ad48869f4b91c2ec8756e92cc01057 0       Dockerfile
 100755 dd5520ca788a63f9ac7356a4b06bd01ef708a196 0       Pipfile
@@ -57,7 +65,6 @@ Whoa that's a lot of files! I guess this website is being served by some sort of
 Because the `index` file is in a [binary format](https://git-scm.com/docs/index-format), I didn't really feel like figuring out its exact structure so I just copied the hashes in from the result of `git ls-files --stage` and turned them into a list. I used the [`requests`](https://github.com/psf/requests) library to actually fetch the objects from the server, and just had to iterate over the hashes and write them to the proper paths to do so. The results was [`fetch_objects.py`](./fetch_objects.py), which worked well for my purposes (it does have to be run from the same directory as the `.git/` directory though). After running the script, the `git restore "*"` command brings back all of the files, allowing you to browse through the Python source of the ransomware ring website.
 
 I went straight to [`app/server.py`](./server-files/app/server.py), since I figured that'd be where the super secret login URL would be, and I was not disappointed. The very first function declared is one called `expected_pathkey()`, which just returns the string `adrlarozeijppjmg`. Scrolling all the way down to the bottom confirms that you must have the pathkey right after the domain name, or else the web server redirects you to the unauthorized page from earlier. Now that I know the pathkey, I can try appending it to the URL found in the previous task. Navigating to https://iulplkticahjbflq.ransommethis.net/adrlarozeijppjmg yields the following screen:
-
 
 <div style="text-align: center;">
     <img src="./img/login%20screen.png" alt="Login screen">

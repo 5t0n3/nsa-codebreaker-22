@@ -1,5 +1,11 @@
 # Task A1 - Initial Access
 
+<p align="center">
+<img src="https://img.shields.io/badge/categories-Log%20analysis-informational">
+<img src="https://img.shields.io/badge/points-10-success">
+<img src="https://img.shields.io/badge/tools-miller-blueviolet">
+</p>
+
 > We believe that the attacker may have gained access to the victim's network by phishing a legitimate users credentials and connecting over the company's VPN. The FBI has obtained a copy of the company's VPN server log for the week in which the attack took place. Do any of the user accounts show unusual behavior which might indicate their credentials have been compromised?
 >
 > Note that all IP addresses have been anonymized.
@@ -12,7 +18,7 @@
 >
 > - Enter the username which shows signs of a possible compromise
 
-# Solution
+## Solution
 
 I ended up using [Miller](https://github.com/johnkerl/miller) to manipulate the CSV log file, but you could just as easily use something like Excel or even [Python's native csv module](https://docs.python.org/3/library/csv.html). The log file has a few columns that are common between all of the entries (including `Proto` and `Node`), so I removed them using Miller. I also removed the IP columns since it was mentioned that all of the addresses were anonymized, so I didn't think they'd be necessary. The result of these cuts was [vpn-stripped.log](./vpn-stripped.log), which was a bit more manageable in my opinion.
 

@@ -1,5 +1,11 @@
 # Task B1 - Information Gathering
 
+<p align="center">
+<img src="https://img.shields.io/badge/categories-Reverse%20Engineering%2C%20Web%20Analysis-informational">
+<img src="https://img.shields.io/badge/points-10-success">
+<img src="https://img.shields.io/badge/tools-Firefox%20devtools-blueviolet">
+</p>
+
 > The attacker left a file with a ransom demand, which points to a site where they're demanding payment to release the victim's files.
 >
 > We suspect that the attacker may not have been acting entirely on their own. There may be a connection between the attacker and a larger ransomware-as-a-service ring.
@@ -14,7 +20,7 @@
 >
 > - Enter the domain name of the associated site.
 
-# Solution
+## Solution
 
 Obviously the first thing to do would be to inspect the provided ransom note, which has a website in it among other things: https://joxlmnswxaxypbeq.unlockmyfiles.biz/. It looks something like this:
 
