@@ -28,4 +28,4 @@ Guess it's been a while since this ransomware attack if there's -176 days until 
     <img src="./img/Firefox%20devtools%20with%20connection%20to%20other%20website.png" alt="Firefox DevTools open showing connection to another website">
 </div>
 
-Actually opening up the website just shows some JSON, but it's still another website. Submitting `https://iulplkticahjbflq.ransommethis.net` ended up being correct for the other ransomware-related site.
+Actually opening up the website just shows some JSON, but it's still another website. Submitting `iulplkticahjbflq.ransommethis.net` ended up being correct for the other ransomware-related site.
