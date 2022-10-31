@@ -8,7 +8,7 @@ type Aes128CbcDecryptor = cbc::Decryptor<aes::Aes128>;
 const IV: [u8; 16] = hex!("c15045f99859d5ca938617ebc4923214");
 const TEST_BLOCK: [u8; 16] = hex!("E3 41 05 64 35 08 56 6B 9F 5E 51 6C 25 CC 8C 8E");
 
-const PDF_MAGIC: &'static [u8] = "%PDF".as_bytes();
+const PDF_MAGIC: &[u8] = "%PDF".as_bytes();
 const MAGIC_LEN: usize = 4;
 
 fn test_key(time_chunk: u32) -> Option<(String, [u8; 16])> {
