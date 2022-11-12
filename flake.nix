@@ -11,31 +11,23 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       craneLib = crane.lib.${system};
-      bruteforce-rs = craneLib.buildPackage {
-        src = craneLib.cleanCargoSource ./task9/solving/bruteforce-rs;
+      task9-rs = craneLib.buildPackage {
+        src = craneLib.cleanCargoSource ./task9/solving/task9-rs;
       };
+      task9-c = pkgs.callPackage ./task9/solving/task9-c { };
+      taskPython = pkgs.python310.withPackages (nixpkgs.lib.attrVals [
+        "requests"
+        "pyjwt"
+        "beautifulsoup4"
+        "cryptography"
+      ]);
       inherit (pkgs) mkShell python310 miller;
     in {
-      packages.${system} = { inherit bruteforce-rs; };
+      packages.${system} = { inherit task9-rs task9-c; };
 
-      devShells.${system} = {
-        task-a1 = mkShell { packages = [ miller ]; };
-
-        task-b2 = mkShell {
-          packages = [ (python310.withPackages (ps: [ ps.requests ])) ];
-        };
-
-        tasks6-7 = mkShell {
-          packages = [ (python310.withPackages (ps: [ ps.pyjwt ])) ];
-        };
-
-        task-9 = mkShell {
-          packages = [
-            (python310.withPackages (ps: [ ps.cryptography ]))
-            bruteforce-rs
-          ];
-        };
-      };
+      # TODO: consolidate python devshells? no reason to keep them separated
+      devShells.${system}.default =
+        mkShell { packages = [ miller taskPython task9-rs task9-c ]; };
 
       formatter.${system} = pkgs.nixfmt;
     };

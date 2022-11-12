@@ -29,7 +29,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "bruteforce-rs"
+name = "task9-rs"
 version = "0.1.0"
 dependencies = [
  "aes",
