@@ -8,8 +8,10 @@ stdenv.mkDerivation {
 
   buildInputs = [ openssl_3.dev ];
 
+  # dontStrip = true;
+
   buildPhase = ''
-    $CC -Wall -O2 -g task9.c -o task9-c -lssl -lcrypto
+    $CC -Wall -O2 -g task9.c -o task9-c -lcrypto
   '';
 
   installPhase = ''

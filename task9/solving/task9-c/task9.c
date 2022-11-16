@@ -10,21 +10,18 @@ const unsigned char IV[] = {0xc1,0x50,0x45,0xf9,0x98,0x59,0xd5,0xca,0x93,0x86,0x
 const unsigned char TEST_BLOCK[] = {0xe3,0x41,0x05,0x64,0x35,0x08,0x56,0x6b,0x9f,0x5e,0x51,0x6c,0x25,0xcc,0x8c,0x8e};
 const unsigned char PDF_MAGIC[] = "%PDF";
 
-unsigned char key[17] = {};
-unsigned char result[17] = {};
+unsigned char *key, *result;
+int *outl;
 
 bool test_key(unsigned int time_seq, EVP_CIPHER *cipher, EVP_CIPHER_CTX *ctx) {
     // Create key in UUID format
-    snprintf((char *)key, 17, "%x-b0fb-11", time_seq);
+    sprintf((char *)key, "%x-b0fb-11", time_seq);
 
     // Initialize AES decryptor
     EVP_DecryptInit_ex2(ctx, cipher, key, IV, NULL);
 
-    // I don't use this but EVP_DecryptUpdate needs it so
-    int *outl = malloc(sizeof(int));
-
-    // Decryption :) (no idea why input length has to be 17)
-    if (EVP_DecryptUpdate(ctx, result, outl, TEST_BLOCK, 17) != 1) {
+    // Decryption :) (still don't know why inl has to be 17)
+    if (!EVP_DecryptUpdate(ctx, result, outl, TEST_BLOCK, 17)) {
         printf("error decrypting with key %s\n", key);
         return false;
     }
@@ -33,24 +30,25 @@ bool test_key(unsigned int time_seq, EVP_CIPHER *cipher, EVP_CIPHER_CTX *ctx) {
     EVP_CIPHER_CTX_reset(ctx);
 
     // Check for pdf magic
-    return memcmp(result, PDF_MAGIC, (long unsigned int) 4) == 0;
+    return !memcmp(result, PDF_MAGIC, (long unsigned int) 4);
 }
 
 int main() {
     // timing because stats or something
     clock_t start_time = clock();
 
+    // OpenSSL initialization
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-
-    // Using the above context causes a segfault and I have no idea why so yeah
     EVP_CIPHER *cipher = EVP_CIPHER_fetch(NULL, "AES-128-CBC", NULL);
+
+    // Decryption pointer things
+    outl = malloc(sizeof(int));
+    result = OPENSSL_malloc(EVP_CIPHER_get_block_size(cipher));
+    key = OPENSSL_malloc(EVP_CIPHER_get_key_length(cipher));
 
     bool found_key = false;
     for (unsigned int time = 0xde082b80; time < 0xe52f8980; time++) {
         if (test_key(time, cipher, ctx)) {
-            // null-terminated string moment
-            result[16] = 0;
-
             found_key = true;
             break;
         }
