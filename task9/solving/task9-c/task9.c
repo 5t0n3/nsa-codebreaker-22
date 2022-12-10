@@ -11,7 +11,7 @@ const unsigned char TEST_BLOCK[] = {0xe3,0x41,0x05,0x64,0x35,0x08,0x56,0x6b,0x9f
 const unsigned char PDF_MAGIC[] = "%PDF";
 
 unsigned char *key, *result;
-int *outl;
+int outl;
 
 bool test_key(unsigned int time_seq, EVP_CIPHER *cipher, EVP_CIPHER_CTX *ctx) {
     // Create key in UUID format
@@ -21,7 +21,7 @@ bool test_key(unsigned int time_seq, EVP_CIPHER *cipher, EVP_CIPHER_CTX *ctx) {
     EVP_DecryptInit_ex2(ctx, cipher, key, IV, NULL);
 
     // Decryption :) (still don't know why inl has to be 17)
-    if (!EVP_DecryptUpdate(ctx, result, outl, TEST_BLOCK, 17)) {
+    if (!EVP_DecryptUpdate(ctx, result, &outl, TEST_BLOCK, 17)) {
         printf("error decrypting with key %s\n", key);
         return false;
     }
@@ -42,7 +42,6 @@ int main() {
     EVP_CIPHER *cipher = EVP_CIPHER_fetch(NULL, "AES-128-CBC", NULL);
 
     // Decryption pointer things
-    outl = malloc(sizeof(int));
     result = OPENSSL_malloc(EVP_CIPHER_get_block_size(cipher));
     key = OPENSSL_malloc(EVP_CIPHER_get_key_length(cipher));
 

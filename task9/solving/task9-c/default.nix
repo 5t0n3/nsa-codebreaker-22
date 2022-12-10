@@ -3,7 +3,7 @@
   openssl_3,
 }:
 stdenv.mkDerivation {
-  pname = "bruteforce-c";
+  pname = "task9-c";
   version = "0.0.1";
 
   src = ./.;
