@@ -11,7 +11,7 @@ if __name__ == "__main__":
         "iat": now,
         "exp": now + datetime.timedelta(days=365),
         "sec": "TQ9mpDdETkLCarLuyggyK8eDvJYESLjA",
-        "uid": 16498
+        "uid": 16498,
     }
-    
-    print(jwt.encode(admin_jwt, HMAC_KEY, algorithm='HS256'))
+
+    print(jwt.encode(admin_jwt, HMAC_KEY, algorithm="HS256"))

@@ -1,0 +1,89 @@
+main.t99L4DIIIhE
+- opens connection to ./keyMaster.db
+> calls main.kitBP...
+
+main.kitBPWLjA3U
+- base64 decodes, calls decryption, then base64 encodes
+- probably only called for `unlock`
+> calls main.mTXY...
+
+main.mTXY69XKhlw
+- decrypts key?
+- operating in AES CBC mode I think (calls to aes.NewCipher & cipher.NewCBCDecrypter)
+- aes.NewCipher needs 16/24/32 byte key
+> calls main.p4hsJ3K...
+
+main.p4hsJ3KeOvw
+- contains key in base64??!? (no </3)
+* oWBy7HUKZqhBCkqEDwsYeebaK12aDi2Jz3ftqWCLxZ8=
+- actually maybe that's the password/salt (guessing it's the salt? loaded into RSI)
+- calls crypto/pkbdf2.Key (https://pkg.go.dev/golang.org/x/crypto/pbkdf2)
+- pointer to what may be salt?
+  -> bcccd04a512ffad511bdb418e6591bb0c2802e166ddbdf7ba48748dc4437afbae650193ecaee75b1be739f570891a2fb5e6618e6c163fb8f479f5421cfadc16f7105cdd278bba04d9c6f07b7aed65f690fe9ce6fb8b01c92
+- ^ is xored with the following: (wrapped around)
+  -> f9f4b518205cbfa73ac9d721af2152
+  - ADDENDUM: result of xoring is base64??
+    -> https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR(%7B'option':'Hex','string':'f9f4b518205cbfa73ac9d721af2152'%7D,'Standard',false)&input=YmNjY2QwNGE1MTJmZmFkNTExYmRiNDE4ZTY1OTFiYjBjMjgwMmUxNjZkZGJkZjdiYTQ4NzQ4ZGM0NDM3YWZiYWU2NTAxOTNlY2FlZTc1YjFiZTczOWY1NzA4OTFhMmZiNWU2NjE4ZTZjMTYzZmI4ZjQ3OWY1NDIxY2ZhZGMxNmY3MTA1Y2RkMjc4YmJhMDRkOWM2ZjA3YjdhZWQ2NWY2OTBmZTljZTZmYjhiMDFjOTI
+- which hash function does it use??? (sha256)
+- 32 bytes, 4096 iterations?
+- iv maybe? (no?)
+  - might be random 💀
+    - how would they decrypt?
+  -> 7e260000602601007c380000206a010000000000... (32 bytes)
+- block size for AES is 16 :(
+- in_RCS -> initial value? (16 is block size)
+
+args to pbkdf2:
+- RAX: base64 string? (loong one)
+- R8: length (56 iirc)
+-
+
+salt (?): https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR(%7B'option':'Hex','string':'f9f4b518205cbfa73ac9d721af2152'%7D,'Standard',false)&input=YmNjY2QwNGE1MTJmZmFkNTExYmRiNDE4ZTY1OTFiYjBjMjgwMmUxNjZkZGJkZjdiYTQ4NzQ4ZGM0NDM3YWZiYWU2NTAxOTNlY2FlZTc1YjFiZTczOWY1NzA4OTFhMmZiNWU2NjE4ZTZjMTYzZmI4ZjQ3OWY1NDIxY2ZhZGMxNmY3MTA1Y2RkMjc4YmJhMDRkOWM2ZjA3YjdhZWQ2NWY2OTBmZTljZTZmYjhiMDFjOTI
+pbkdf2 key (wrong): https://gchq.github.io/CyberChef/#recipe=Derive_PBKDF2_key(%7B'option':'Base64','string':'oWBy7HUKZqhBCkqEDwsYeebaK12aDi2Jz3ftqWCLxZ8%3D'%7D,128,4096,'SHA256',%7B'option':'Base64','string':'E8eRqsEr%2Btc9IxII65661dxAmPiseeVNSH9buIOxiR0vZhVNFFDYfY2Xf0us6YtwQYruBrwl3NUNZcGISViUqg%3D%3D'%7D)
+pbkddf2 key (also wrong): https://gchq.github.io/CyberChef/#recipe=Derive_PBKDF2_key(%7B'option':'Base64','string':'oWBy7HUKZqhBCkqEDwsYeebaK12aDi2Jz3ftqWCLxZ8%3D'%7D,256,4096,'SHA256',%7B'option':'Hex','string':'45386552717345722b7463394978494936353636316478416d5069736565564e5348396275494f78695230765a68564e46464459665932586630757336597477515972754272776c334e554e5a6347495356695571673d3d'%7D)From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')&input=Cg
+
+iv maybe?
+
+main.mtHO6enMvyA
+- reads 16 (?) random bytes from somewhere
+> calls main.p4hs (?)
+
+main.XL95gzwGuD8
+- references ./keyMaster.db
+
+main.OTMX1OW4JrU
+- references ./receipt.pub (RSA key)
+  - Can't download for some reason?
+
+
+maybe?? (from gdb; nope) E8eRqsEr+tc9IxII65661dxAmPiseeVNSH9buIOxiR0vZhVNFFDYfY2Xf0us6YtwQYruBrwl3NUNZcGISViUqg==
+
+also maybe 0x060c4763bfa0ac2a77b5705331a303f49268535a0746484970501c5468762e66? (no </3)
+0x060c4763bfa0ac2a77b5705331a303f49268535a0746484970501c5468762e66 (copy pasted version of above)
+base64 encoded hex: MDYwYzQ3NjNiZmEwYWMyYTc3YjU3MDUzMzFhMzAzZjQ5MjY4NTM1YTA3NDY0ODQ5NzA1MDFjNTQ2ODc2MmU2Ng== (length seems to match up with encrypted keys in db?) ALSO NO
+
+endianness maybe?? (gotten from x/32b 0xc000148100)
+0x63	0x47	0x0c	0x06	0x2a	0xac	0xa0	0xbf
+0x53	0x70	0xb5	0x77	0xf4	0x03	0xa3	0x31
+0x5a	0x53	0x68	0x92	0x49	0x48	0x46	0x07
+0x54	0x1c	0x50	0x70	0x66	0x2e	0x76	0x68
+
+(single hex number) 63470c062aaca0bf5370b577f403a3315a53689249484607541c5070662e7668 (ENDIANNESS WAS THE ISSUE; base64 of binary version of it)
+answer: Y0cMBiqsoL9TcLV39AOjMVpTaJJJSEYHVBxQcGYudmg=
+
+gotten from *0x004a5e98
+byte component? (both uint128s)
+138853343697811873815836495411327554394 -> xmm2
+65978596397350581303271037852912994147 -> xmm0
+
+ADDENDUM: pbkdf2 does work lmao
+https://gchq.github.io/CyberChef/#recipe=Derive_PBKDF2_key(%7B'option':'UTF8','string':'E8eRqsEr%2Btc9IxII65661dxAmPiseeVNSH9buIOxiR0vZhVNFFDYfY2Xf0us6YtwQYruBrwl3NUNZcGISViUqg%3D%3D'%7D,256,4096,'SHA256',%7B'option':'Base64','string':'oWBy7HUKZqhBCkqEDwsYeebaK12aDi2Jz3ftqWCLxZ8%3D'%7D)From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')
+
+==========================================
+
+links:
+- https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf (rax -> return value)
+- https://web.stanford.edu/class/cs107/guide/x86-64.html (registers in general)
+- https://braincoke.fr/blog/2020/08/the-aes-key-schedule-explained/#rcon (AES key schedule?)
+- https://reverseengineering.stackexchange.com/questions/10746/what-does-mov-qword-ptr-dsrax18-r8-mean (something something qword ptr)
+- https://stackoverflow.com/questions/48608423/what-do-square-brackets-mean-in-x86-assembly (brackets in MOV instruction)

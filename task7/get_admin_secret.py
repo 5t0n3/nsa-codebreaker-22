@@ -41,6 +41,6 @@ if __name__ == "__main__":
     programs_contributed = user_info[3].find("p")
     uid = programs_contributed.get_text()
 
-    print("="*32)
+    print("=" * 32)
     print(f"Full admin secret: {admin_secret}")
     print(f"NervousHiccups uid: {uid}")
