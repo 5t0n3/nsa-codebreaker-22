@@ -181,8 +181,6 @@ Unfortunately we can't download the `receipt.pub` key from the server so we can'
 
 This function appears to open a connection to the database `./keyMaster.db`:
 
-TODO: mention ABI/how slices are passed?
-
 <div align="center">
 <img src="img/xl9-opendb.png" alt="Ghidra disassembly view of opening keyMaster.db">
 </div>
