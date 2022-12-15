@@ -34,9 +34,9 @@ export hexkey
 ./busybox find $1 -regex '.*\.\(pdf\|doc\|docx\|xls\|xlsx\|ppt\|pptx\)' -print -exec sh -c 'iv=`./openssl rand -hex 16`; echo -n $iv > $0.enc; ./openssl enc -e -aes-128-cbc -K $hexkey -iv $iv -in $0 >> $0.enc; rm $0' \{\} \; 2>/dev/null
 ```
 
-# TODO: mention I didn't realize this lol
+I didn't actually find this script initially, so I ended up assuming that the PDF was encrypted with AES-256-CBC like the keys in the keyMaster database. Obviously this was incorrect, so I ended up banging my head against a wall for a couple of days until I thought to look back through old tasks :)
 
-From this script, we know that our file (a PDF document) was encrypted with AES-128 in CBC mode with a random IV.
+Anyways, from this script we know that our file (a PDF document) was encrypted with AES-128 in CBC mode (not AES-256 as I assumed) with a random IV.
 We also know that both the encryption key and IV are provided in a hexadecimal representation (through the `xxd -p` and `./openssl rand -hex 16` commands, respectively). The key is truncated to 32 hex characters (`head -c 32`), which is also 16 bytes, or 16 ASCII characters. The IV, on the other hand, is prepended to the encrypted file contents (`echo -n $iv > $0.enc`).
 
 Let's actually check out a hex dump of the file in case we can read the IV from that:
@@ -131,7 +131,7 @@ e2344900-b0fb-11
 
 So that means that our actual key range is `dea0c200-b0fb-11` to `e2344900-b0fb-11`. I guess we didn't need the clock sequence/node after all :)
 
-### Realizations (TODO: better name?)
+### Key verification
 
 That was a lot of information, so let's do some more recap of what we know :)
 
