@@ -245,7 +245,7 @@ This function seems to be where the key decryption happens, probably when a user
 <img src="img/mtx-encryption.png" alt="Calls to AES and CBC related functions in the Ghidra decompiler view">
 </div>
 
-So now we know that the keys are probably encrypted with AES in CBC mode. I'll go more into what that means later, but in case you're curious now there's a [Wikipedia article](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_block_chaining_(CBC)) explaining what CBC is.
+So now we know that the keys are probably encrypted with AES in CBC mode. I'll go more into what that means later, but in case you're curious now there's a [Wikipedia article](<https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_block_chaining_(CBC)>) explaining what CBC is.
 
 The call to `main.p4hsJ3KeOvw` might return a key, which based on the task instructions as well as the fact that AES is a symmetric cipher (i.e. the same key is used for both encryption and decryption) should be consistent across multiple runs of the keyMaster binary. If we're lucky maybe it's just returned as a byte slice without any shenanigans happening? (hint: it's not)
 
@@ -266,7 +266,7 @@ Longer: bcccd04a512ffad511bdb418e6591bb0c2802e166ddbdf7ba48748dc4437afbae650193e
 Shorter: f9f4b518205cbfa73ac9d721af2152
 ```
 
-After sticking those into [CyberChef](https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR(%7B'option':'Hex','string':'f9f4b518205cbfa73ac9d721af2152'%7D,'Standard',false)&input=YmNjY2QwNGE1MTJmZmFkNTExYmRiNDE4ZTY1OTFiYjBjMjgwMmUxNjZkZGJkZjdiYTQ4NzQ4ZGM0NDM3YWZiYWU2NTAxOTNlY2FlZTc1YjFiZTczOWY1NzA4OTFhMmZiNWU2NjE4ZTZjMTYzZmI4ZjQ3OWY1NDIxY2ZhZGMxNmY3MTA1Y2RkMjc4YmJhMDRkOWM2ZjA3YjdhZWQ2NWY2OTBmZTljZTZmYjhiMDFjOTI), the result turns out to be `E8eRqsEr+tc9IxII65661dxAmPiseeVNSH9buIOxiR0vZhVNFFDYfY2Xf0us6YtwQYruBrwl3NUNZcGISViUqg==` which is...a valid Base64 string again? What's with this ransomware company and Base64?
+After sticking those into [CyberChef](<https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR(%7B'option':'Hex','string':'f9f4b518205cbfa73ac9d721af2152'%7D,'Standard',false)&input=YmNjY2QwNGE1MTJmZmFkNTExYmRiNDE4ZTY1OTFiYjBjMjgwMmUxNjZkZGJkZjdiYTQ4NzQ4ZGM0NDM3YWZiYWU2NTAxOTNlY2FlZTc1YjFiZTczOWY1NzA4OTFhMmZiNWU2NjE4ZTZjMTYzZmI4ZjQ3OWY1NDIxY2ZhZGMxNmY3MTA1Y2RkMjc4YmJhMDRkOWM2ZjA3YjdhZWQ2NWY2OTBmZTljZTZmYjhiMDFjOTI>), the result turns out to be `E8eRqsEr+tc9IxII65661dxAmPiseeVNSH9buIOxiR0vZhVNFFDYfY2Xf0us6YtwQYruBrwl3NUNZcGISViUqg==` which is...a valid Base64 string again? What's with this ransomware company and Base64?
 
 Anyways, after all of that the function uses [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2) to generate what we can assume is the AES encryption key:
 
@@ -299,7 +299,7 @@ Anyways, tracing through the function and cross-referencing those results with t
 - `keyLen` -> 0x20 hex (32 decimal)
 - `h` -> the `crypto/sha256.New()` function, meaning that this PBKDF2 is based on SHA256 HMAC
 
-Shoving all of that information into [CyberChef](https://gchq.github.io/CyberChef/#recipe=Derive_PBKDF2_key(%7B'option':'UTF8','string':'E8eRqsEr%2Btc9IxII65661dxAmPiseeVNSH9buIOxiR0vZhVNFFDYfY2Xf0us6YtwQYruBrwl3NUNZcGISViUqg%3D%3D'%7D,256,4096,'SHA256',%7B'option':'Base64','string':'oWBy7HUKZqhBCkqEDwsYeebaK12aDi2Jz3ftqWCLxZ8%3D'%7D)From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')) gives us our key encoded in Base64: `Y0cMBiqsoL9TcLV39AOjMVpTaJJJSEYHVBxQcGYudmg=`.
+Shoving all of that information into [CyberChef](<https://gchq.github.io/CyberChef/#recipe=Derive_PBKDF2_key(%7B'option':'UTF8','string':'E8eRqsEr%2Btc9IxII65661dxAmPiseeVNSH9buIOxiR0vZhVNFFDYfY2Xf0us6YtwQYruBrwl3NUNZcGISViUqg%3D%3D'%7D,256,4096,'SHA256',%7B'option':'Base64','string':'oWBy7HUKZqhBCkqEDwsYeebaK12aDi2Jz3ftqWCLxZ8%3D'%7D)From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')>) gives us our key encoded in Base64: `Y0cMBiqsoL9TcLV39AOjMVpTaJJJSEYHVBxQcGYudmg=`.
 
 Note that this isn't how I found the key initially: instead I used GDB to set a breakpoint after the `main.p4hsJ3KeOvw` function was called and checked the value referred to by the address in the `RAX` register, which is normally used as a return register when calling functions.
 Now that I (almost :)) understand Go's function calling conventions, though, I thought explaining this would be beneficial as well :D
@@ -316,7 +316,7 @@ Beyond the different kinds of AES, there are also different modes of operation, 
 In this case, the keys in the keyMaster database are encrypted in cipher block chaining (CBC) mode, which means that before each 128-bit block of the key is encrypted, it is xored with the previous encrypted block, or the initialization vector (IV) if it's the first block.
 I believe that CBC mode is generally discouraged from use since it allows you to recover everything but the first block of an encrypted message if you're able to find the key it was encrypted with. In this case we do care about the first block of the UUID, though, so we're going to need to figure out the IV for each key somehow.
 
-After I found the AES encryption key, I was putting the encrypted keys in the database through CyberChef [like so](https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true,false)AES_Decrypt(%7B'option':'Base64','string':'Y0cMBiqsoL9TcLV39AOjMVpTaJJJSEYHVBxQcGYudmg%3D'%7D,%7B'option':'Hex','string':'0000000000000000000000000000000'%7D,'CBC','Raw','Raw',%7B'option':'Hex','string':''%7D,%7B'option':'Hex','string':''%7D)&input=TkxmYk5oSUkrZEk0c1Y1clJMUXVhNXhmZlNVSGdLSHZEd3NWTytOQ3hYMDdlQXZjamhBdllNYXBSTXVmNXNrKzZGOEpIVjg4KzN0TWtZRGlWL0NBUkE9PQ) which then made me notice something: even though the first 16 bytes were still garbage, the rest of each encrypted key appeared to be a full UUID sans the last four characters?
+After I found the AES encryption key, I was putting the encrypted keys in the database through CyberChef [like so](<https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true,false)AES_Decrypt(%7B'option':'Base64','string':'Y0cMBiqsoL9TcLV39AOjMVpTaJJJSEYHVBxQcGYudmg%3D'%7D,%7B'option':'Hex','string':'0000000000000000000000000000000'%7D,'CBC','Raw','Raw',%7B'option':'Hex','string':''%7D,%7B'option':'Hex','string':''%7D)&input=TkxmYk5oSUkrZEk0c1Y1clJMUXVhNXhmZlNVSGdLSHZEd3NWTytOQ3hYMDdlQXZjamhBdllNYXBSTXVmNXNrKzZGOEpIVjg4KzN0TWtZRGlWL0NBUkE9PQ>) which then made me notice something: even though the first 16 bytes were still garbage, the rest of each encrypted key appeared to be a full UUID sans the last four characters?
 Then it hit me: the first 16 bytes of each encrypted key was probably the encryption IV, which would allow them to easily decrypt them later while still using random IVs like you're supposed to.
 
 With this new knowledge, I wrote up [a quick script](./decrypt_keys.py) to dump all decrypted keys from the database into [a file](./decrypted-keys.txt). The similarities between the keys (especially their second halves) confirm that these are indeed version 1 UUIDs, which will prove useful for our next task :)

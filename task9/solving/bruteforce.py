@@ -32,10 +32,10 @@ if __name__ == "__main__":
     start_time = time.perf_counter()
     result_found = False
 
-    # 12 seconds before: de082b80-b0fb-11
-    # 1 second before: e52f8980-b0fb-11
+    # 12 seconds before: dea0c200-b0fb-11
+    # 6 seconds before: e2344900-b0fb-11
 
-    for seq in range(0xde082b80, 0xe52f8980):
+    for seq in range(0xdea0c200, 0xe2344900):
         result = test_key(seq)
         keys_tested += 1
 

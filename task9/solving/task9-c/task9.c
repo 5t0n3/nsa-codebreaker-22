@@ -46,7 +46,7 @@ int main() {
     key = OPENSSL_malloc(EVP_CIPHER_get_key_length(cipher));
 
     bool found_key = false;
-    for (unsigned int time = 0xde082b80; time < 0xe52f8980; time++) {
+    for (unsigned int time = 0xdea0c200; time < 0xe2344900; time++) {
         if (test_key(time, cipher, ctx)) {
             found_key = true;
             break;

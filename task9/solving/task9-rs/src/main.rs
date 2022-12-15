@@ -26,12 +26,12 @@ fn test_key(time_chunk: u32) -> Option<(String, [u8; 16])> {
 }
 
 fn main() {
-    // 12 seconds before log time: de082b80-b0fb-11
-    // 1 second before: e52f3980-b0fb-11
+    // 12 seconds before log time: dea0c200-b0fb-11
+    // 6 seconds before: e2344900-b0fb-11
 
     let start_time = Instant::now();
 
-    if let Some((key, data)) = (0xde082b80..0xe52f3980)
+    if let Some((key, data)) = (0xdea0c200..0xe2344900)
         .into_par_iter()
         .find_map_any(test_key)
     {

@@ -23,13 +23,13 @@
       "beautifulsoup4"
       "cryptography"
     ]);
-    inherit (pkgs) mkShell python310Packages sqlite miller file;
+    inherit (pkgs) mkShell python310Packages sqlite miller file xxd openssl black;
   in {
     packages.${system} = {inherit task9-rs task9-c;};
 
     devShells.${system} = {
-      default = mkShell {packages = [miller file taskPython sqlite task9-rs task9-c];};
-      format = mkShell {packages = [python310Packages.mdformat];};
+      default = mkShell {packages = [miller file xxd openssl taskPython sqlite task9-rs task9-c];};
+      format = mkShell {packages = [python310Packages.mdformat black];};
     };
 
     formatter.${system} = pkgs.alejandra;
