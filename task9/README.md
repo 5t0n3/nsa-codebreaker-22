@@ -54,7 +54,7 @@ Instead of being garbage like the rest of the file, they're all valid hex charac
 I guess the `echo` command just echoed the hex string to the file, since that is what's stored in the `$iv` variable.
 
 How about the key though? It's not included in the encrypted file or anything, so we'll have to find it through some other means.
-Luckily as part of task 8 we were able to decrypt [all of the keys](../task8/recovered/decrypted-keys.txt) in the ransomware site's storage, so we can use them as a starting point.
+Luckily as part of task 8 we were able to decrypt [all of the keys](../task8/decrypted-keys.txt) in the ransomware site's storage, so we can use them as a starting point.
 Let's take a look at a few of them:
 
 ```text
